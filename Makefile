@@ -5,6 +5,8 @@ CFLAGS  ?= -Wall -Wextra -Werror -std=c11 -O2 -g
 # Linker flags
 LDFLAGS ?=
 
+PORT ?= 6379
+
 # Build directory
 BUILD_DIR := build
 TARGET    := $(BUILD_DIR)/redis-scratch
@@ -27,4 +29,4 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 run: $(TARGET)
-	./$(TARGET) --port 6379
+	./$(TARGET) --port $(PORT)

@@ -48,6 +48,19 @@ static void trim_crlf(char *line) {
 static bool is_ping(const char *line) {
   return strcmp(line, "PING") == 0;
 }
+/**
+Cheatsheet:
+htons => host to network short
+htonl => host to network long
+ntohs => network to host short
+ntohl => network to host long
+inet_ntoa => network to address
+inet_aton => address to network
+inet_addr => address to network
+inet_ntop => address to string
+inet_pton => string to address
+*/
+
 
 static int create_listen_socket(int port) {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
