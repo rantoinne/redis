@@ -1,0 +1,10 @@
+# Default: port mapping works on Docker Desktop (Mac/Windows) and Linux.
+# For Linux host networking, use: docker compose -f docker-compose.host.yml up -d
+services:
+  redis-scratch:
+    build: .
+    image: redis-scratch:latest
+    ports:
+      - "${PORT:-6379}:${PORT:-6379}"
+    command: ["--port", "${PORT:-6379}"]
+    restart: unless-stopped

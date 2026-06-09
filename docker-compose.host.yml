@@ -1,0 +1,8 @@
+# Linux only: true host network (ignored/broken on Docker Desktop for Mac).
+services:
+  redis-scratch:
+    build: .
+    image: redis-scratch:latest
+    network_mode: host
+    command: ["--port", "${PORT:-6379}"]
+    restart: unless-stopped
