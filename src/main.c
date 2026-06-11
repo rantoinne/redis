@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,24 @@
 
 #define DEFAULT_PORT 6379
 #define READ_BUF_SIZE 4096
+
+static void log_info(const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  fputs("[info] ", stderr);
+  vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  fputc('\n', stderr);
+}
+
+static void log_error(const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  fputs("[error] ", stderr);
+  vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  fputc('\n', stderr);
+}
 
 static int parse_port(int argc, char **argv) {
   int port = DEFAULT_PORT;
@@ -134,6 +153,7 @@ static int handle_client(int client_fd) {
   }
 
   trim_crlf(buf);
+  log_info("received command: %s", buf);
 
   const char *response;
   if (is_ping(buf)) {
@@ -141,6 +161,7 @@ static int handle_client(int client_fd) {
   } else {
     response = "ERR unknown command\n";
   }
+  log_info("sending response: %s", response);
 
   size_t len = strlen(response);
   size_t sent = 0;
@@ -163,7 +184,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  printf("Listening on port %d\n", port);
+  log_info("listening on port %d", port);
 
   for (;;) {
     int client_fd = accept(listen_fd, NULL, NULL);
@@ -172,8 +193,12 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    log_info("client connected (fd=%d)", client_fd);
+
     if (handle_client(client_fd) < 0) {
-      fprintf(stderr, "client error\n");
+      log_error("client error (fd=%d)", client_fd);
+    } else {
+      log_info("client disconnected (fd=%d)", client_fd);
     }
 
     close(client_fd);
